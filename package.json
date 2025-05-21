@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest",
+    "test": "npx jest --verbose --detectOpenHandles --forceExit --coverage",
+    "test:coverage": "nyc --reporter=lcov --reporter=text npm test",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
