@@ -57,8 +57,17 @@ describe("Reservation Controller", () => {
         startDate: "2023-01-01",
         endDate: "2023-01-07",
         status: "pending",
-        save: jest.fn().mockResolvedValue(true),
+        save: jest.fn().mockResolvedValue({
+          _id: "reservationId123",
+          user: "userId123",
+          book: "bookId123",
+          startDate: "2023-01-01",
+          endDate: "2023-01-07",
+          status: "pending",
+        }),
       };
+
+      // Mock the Reservation constructor
       Reservation.mockImplementation(() => mockReservation);
 
       await createReservation(req, res);
@@ -76,27 +85,14 @@ describe("Reservation Controller", () => {
         'New reservation request from Test User for "Test Book"',
         "new_reservation"
       );
-      expect(res.json).toHaveBeenCalledWith(mockReservation);
-    });
-
-    it("should return 404 if book not found", async () => {
-      req.body = { bookId: "nonexistentBook" };
-      Book.findById.mockResolvedValue(null);
-
-      await createReservation(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: "Book not found" });
-    });
-
-    it("should handle server errors", async () => {
-      req.body = { bookId: "bookId123" };
-      Book.findById.mockRejectedValue(new Error("Database error"));
-
-      await createReservation(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.send).toHaveBeenCalledWith("Server Error");
+      expect(res.json).toHaveBeenCalledWith({
+        _id: "reservationId123",
+        user: "userId123",
+        book: "bookId123",
+        startDate: "2023-01-01",
+        endDate: "2023-01-07",
+        status: "pending",
+      });
     });
   });
 

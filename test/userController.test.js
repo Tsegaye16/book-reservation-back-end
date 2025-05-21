@@ -32,15 +32,12 @@ describe("User Controller", () => {
         _id: "userId123",
         name: "Test User",
         email: "test@example.com",
-        toObject: jest.fn().mockReturnValue({
-          _id: "userId123",
-          name: "Test User",
-          email: "test@example.com",
-        }),
+        // Remove toObject mock since we're not using it
       };
-      User.findById.mockReturnValue({
+      // Mock the select chain to return the user directly
+      User.findById.mockImplementation(() => ({
         select: jest.fn().mockResolvedValue(mockUser),
-      });
+      }));
 
       await getUser(req, res);
 

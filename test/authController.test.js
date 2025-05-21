@@ -35,20 +35,32 @@ describe("Auth Controller", () => {
         password: "password123",
       };
 
+      // Mock User.findOne to return null (user does not exist)
       User.findOne.mockResolvedValue(null);
+
+      // Step 1: Define mockUser with basic properties
       const mockUser = {
         _id: "user123",
+        id: "user123", // Simulate Mongoose id getter
         name: "Test User",
         email: "test@example.com",
-        save: jest.fn().mockResolvedValue(true),
       };
+
+      // Step 2: Assign the save method after mockUser is defined
+      mockUser.save = jest.fn().mockResolvedValue(mockUser);
+
+      // Mock User constructor to return mockUser
       User.mockImplementation(() => mockUser);
+
+      // Mock jwt.sign to return a token
       jwt.sign.mockImplementation((payload, secret, options, callback) => {
         callback(null, "test-token");
       });
 
+      // Execute the register function
       await register(req, res);
 
+      // Assertions
       expect(User.findOne).toHaveBeenCalledWith({ email: "test@example.com" });
       expect(User).toHaveBeenCalledWith({
         name: "Test User",
@@ -74,6 +86,7 @@ describe("Auth Controller", () => {
       });
     });
 
+    // Other register test cases remain unchanged
     it("should return 400 if user already exists", async () => {
       req.body = { email: "existing@example.com" };
       User.findOne.mockResolvedValue({ email: "existing@example.com" });
@@ -104,6 +117,7 @@ describe("Auth Controller", () => {
 
       const mockUser = {
         _id: "user123",
+        id: "user123", // Simulate Mongoose id getter
         email: "test@example.com",
         password: "hashedPassword",
         isApproved: true,
@@ -196,6 +210,7 @@ describe("Auth Controller", () => {
 
       const mockUser = {
         _id: "admin123",
+        id: "admin123", // Simulate Mongoose id getter
         email: "admin@example.com",
         password: "hashedPassword",
         isApproved: true,
