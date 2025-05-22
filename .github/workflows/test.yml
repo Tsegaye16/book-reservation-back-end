@@ -1,4 +1,6 @@
 name: Run Tests
+# This workflow is named "Run Tests" and will execute whenever code is pushed to 
+# the 'main' branch or when a pull request is opened against the 'main' branch
 
 on:
   push:
@@ -7,45 +9,61 @@ on:
   pull_request:
     branches:
       - main
+# The workflow triggers on two events:
+# 1. Any push to the 'main' branch
+# 2. Any pull request targeting the 'main' branch
+# This ensures tests run for both direct commits and proposed changes
 
 jobs:
   test:
+    # This job named 'test' will run on the latest Ubuntu runner
     runs-on: ubuntu-latest
 
     services:
       mongodb:
+        # Sets up a MongoDB service container using the latest official image
         image: mongo:latest
         ports:
-          - 27017:27017
-        # Add health check and environment variables
+          - 27017:27017  # Exposes MongoDB's default port to the workflow
+        # Environment variables for MongoDB authentication
         env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
+          MONGO_INITDB_ROOT_USERNAME: root  # Sets root username
+          MONGO_INITDB_ROOT_PASSWORD: example  # Sets root password
+        # Health check configuration to ensure MongoDB is ready before tests run
         options: >-
           --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 10s  # Checks every 10 seconds
+          --health-timeout 5s     # Times out after 5 seconds
+          --health-retries 5      # Retries up to 5 times before failing
 
+    # Environment variables available to all steps in the job
     env:
       MONGO_URI: mongodb://root:example@localhost:27017/testdb?authSource=admin
-      NODE_ENV: test
-      JWT_SECRET: test-secret
+      # Connection string for the test database with authentication
+      NODE_ENV: test  # Sets Node environment to 'test'
+      JWT_SECRET: test-secret  # Provides a test secret for JWT operations
 
     steps:
+      # First step checks out the repository code
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Uses the official checkout action
 
+      # Sets up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "20"  # Specifically uses Node.js version 20
+          cache: "npm"  # Enables caching of npm dependencies for faster builds
 
+      # Installs project dependencies
       - name: Install dependencies
-        run: npm ci # Using ci for cleaner installs in CI
+        run: npm ci  # Uses 'npm ci' for clean, reproducible installs
+        # 'npm ci' is preferred in CI over 'npm install' as it's faster and more strict
 
+      # Runs the test suite with additional flags
       - name: Run Tests
         run: npm test -- --ci --coverage
-        # --ci flag for Jest CI-friendly output
-        # --coverage to generate coverage reports (optional)
+        # The flags:
+        # --ci : Optimizes output for CI environment
+        # --coverage : Generates test coverage reports
+        # This assumes your test script is configured to accept these arguments
