@@ -138,7 +138,7 @@ describe("Auth Controller", () => {
         "hashedPassword"
       );
       expect(jwt.sign).toHaveBeenCalledWith(
-        { user: { id: "user123", isAdmin: "Abebe" } },
+        { user: { id: "user123", isAdmin: false } },
         "test-secret",
         { expiresIn: "1h" },
         expect.any(Function)
