@@ -7,6 +7,7 @@
     "lint": "eslint .",
     "test": "npx jest --verbose --detectOpenHandles --forceExit --coverage",
     "test:coverage": "nyc --reporter=lcov --reporter=text npm test",
+    "test:ci": "npm run lint && npm test",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
