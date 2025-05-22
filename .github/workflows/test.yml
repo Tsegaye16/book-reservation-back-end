@@ -32,9 +32,9 @@ jobs:
         # Health check configuration to ensure MongoDB is ready before tests run
         options: >-
           --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
-          --health-interval 10s  # Checks every 10 seconds
-          --health-timeout 5s     # Times out after 5 seconds
-          --health-retries 5      # Retries up to 5 times before failing
+          --health-interval 10s  
+          --health-timeout 5s    
+          --health-retries 5
 
     # Environment variables available to all steps in the job
     env:
